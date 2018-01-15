@@ -6,8 +6,8 @@ date_default_timezone_set('Asia/Jakarta');
 switch ($proses) {
   ////LOGIN////
   case 'login':
-  $username =  mysql_real_escape_string(trim($_POST['username']));
-  $password =  mysql_real_escape_string(trim($_POST['password']));
+  $username =  mysqli_real_escape_string($db->conn, trim($_POST['username']));
+  $password =  mysqli_real_escape_string($db->conn, trim($_POST['password']));
 
   $result = $db->login("petugas", "username = '$username' AND password = '$password'");
 
