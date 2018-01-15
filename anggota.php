@@ -15,19 +15,19 @@ if(isset($_SESSION['pesan'])){
 ?>
 <div class="card mb-3">
   <div class="card-header">
-    <i class="fa fa-user-plus"></i> <?php if(isset($_GET['npm'])){echo "Edit";}else{echo "Tambah";} ?> Anggota</div>
+    <i class="fa fa-user-plus"></i> <?php if(isset($_GET['nis'])){echo "Edit";}else{echo "Tambah";} ?> Anggota</div>
     <div class="card-body">
       <form action="proses.php" method="post" id="needs-validation" novalidate>
         <?php
-        if(isset($_GET['npm'])){
-          $npm = $_GET['npm'];
-          $data = $db->read("anggota", "npm = '$npm'");
+        if(isset($_GET['nis'])){
+          $nis = $_GET['nis'];
+          $data = $db->read("anggota", "nis = '$nis'");
           ?>
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="">NPM</label>
-                <input class="form-control" type="number" name="npm" value="<?php echo $data[0]['npm']; ?>" readonly>
+                <label for="">NIS</label>
+                <input class="form-control" type="number" name="nis" value="<?php echo $data[0]['nis']; ?>" readonly>
               </div>
               <div class="col-md-6">
                 <label for="">Kelas</label>
@@ -40,29 +40,11 @@ if(isset($_SESSION['pesan'])){
           </div>
           <div class="form-group">
             <div class="form-row">
-              <div class="col-md-12">
+              <div class="col-md-6">
                 <label for="">Nama Lengkap</label>
                 <input class="form-control" type="text" name="nama" maxlength="100" placeholder="Nama Lengkap" required value="<?php echo $data[0]['nama']; ?>">
                 <div class="invalid-feedback">
                   Nama lengkap belum diisi.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-row">
-              <div class="col-md-6">
-                <label for="">Jurusan</label>
-                <select class="form-control" name="jurusan" required>
-                  <option value="" selected disabled>Pilih Jurusan</option>
-                  <option value="Teknik Informatika" <?php if($data[0]['jurusan'] == "Teknik Informatika"){echo "selected";} ?>>Teknik Informatika</option>
-                  <option value="Logistik Bisnis" <?php if($data[0]['jurusan'] == "Logistik Bisnis"){echo "selected";} ?>>Logistik Bisnis</option>
-                  <option value="Akuntansi" <?php if($data[0]['jurusan'] == "Akuntansi"){echo "selected";} ?>>Akuntansi</option>
-                  <option value="Manajemen Bisnis" <?php if($data[0]['jurusan'] == "Manajemen Bisnis"){echo "selected";} ?>>Manajemen Bisnis</option>
-                  <option value="Manajemen Informatika" <?php if($data[0]['jurusan'] == "Manajemen Informatika"){echo "selected";} ?>>Manajemen Informatika</option>
-                </select>
-                <div class="invalid-feedback">
-                  Jurusan belum diisi.
                 </div>
               </div>
               <div class="col-md-6">
@@ -85,6 +67,11 @@ if(isset($_SESSION['pesan'])){
           </div>
           <div class="form-group">
             <div class="form-row">
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-row">
               <div class="col-md-2">
                 <input class="btn btn-primary btn-block" type="submit" name="edit_anggota" value="Edit">
               </div>
@@ -102,13 +89,13 @@ if(isset($_SESSION['pesan'])){
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="">NPM</label>
+                <label for="">NIS</label>
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                   <div class="input-group-addon"><span id="pesan">&#160;&#160;&#160;</span></div>
-                  <input class="form-control" type="number" name="npm" maxlength="11" placeholder="NPM" required id="npm">
+                  <input class="form-control" type="number" name="nis" maxlength="11" placeholder="NIS" required id="nis">
                 </div>
                 <div class="invalid-feedback">
-                  NPM belum diisi.
+                  NIS belum diisi.
                 </div>
               </div>
               <div class="col-md-6">
@@ -122,29 +109,11 @@ if(isset($_SESSION['pesan'])){
           </div>
           <div class="form-group">
             <div class="form-row">
-              <div class="col-md-12">
+              <div class="col-md-6">
                 <label for="">Nama Lengkap</label>
                 <input class="form-control" type="text" name="nama" maxlength="100" placeholder="Nama Lengkap" required>
                 <div class="invalid-feedback">
                   Nama lengkap belum diisi.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-row">
-              <div class="col-md-6">
-                <label for="">Jurusan</label>
-                <select class="form-control" name="jurusan" required>
-                  <option value="" selected disabled>Pilih Jurusan</option>
-                  <option value="Teknik Informatika">Teknik Informatika</option>
-                  <option value="Logistik Bisnis">Logistik Bisnis</option>
-                  <option value="Akuntansi">Akuntansi</option>
-                  <option value="Manajemen Bisnis">Manajemen Bisnis</option>
-                  <option value="Manajemen Informatika">Manajemen Informatika</option>
-                </select>
-                <div class="invalid-feedback">
-                  Jurusan belum diisi.
                 </div>
               </div>
               <div class="col-md-6">
@@ -192,10 +161,9 @@ if(isset($_SESSION['pesan'])){
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
               <thead>
                 <tr>
-                  <th>NPM</th>
+                  <th>NIS</th>
                   <th>Nama</th>
                   <th>Kelas</th>
-                  <th>Jurusan</th>
                   <th>Jenis Kelamin</th>
                   <th>Aksi</th>
                 </tr>
@@ -205,14 +173,13 @@ if(isset($_SESSION['pesan'])){
                 foreach($result as $data){
                   ?>
                 <tr>
-                  <td><?php echo $data['npm']; ?></td>
+                  <td><?php echo $data['nis']; ?></td>
                   <td><?php echo $data['nama']; ?></td>
                   <td><?php echo $data['kelas']; ?></td>
-                  <td><?php echo $data['jurusan']; ?></td>
                   <td><?php echo $data['jenis_kelamin']; ?></td>
                   <td>
-                    <a href="anggota.php?npm=<?php echo $data['npm'];?>"><i class="fa fa-pencil-square-o fa-2x"></i></a>&nbsp;&nbsp;
-                    <a href="hapus.php?npm=<?php echo $data['npm'];?>"><i class="fa fa-trash fa-2x"></i></a>
+                    <a href="anggota.php?nis=<?php echo $data['nis'];?>"><i class="fa fa-pencil-square-o fa-2x"></i></a>&nbsp;&nbsp;
+                    <a href="hapus.php?nis=<?php echo $data['nis'];?>"><i class="fa fa-trash fa-2x"></i></a>
                   </td>
                 </tr>
                 <?php

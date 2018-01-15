@@ -4,6 +4,14 @@ include 'header.php';
 include_once 'config/Database.php';
 $db = new Database();
 $result = $db->read("buku");
+if(isset($_SESSION['pesan'])){
+  ?>
+  <div class="alert alert-success alert-dismissable">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Sukses!</strong> <?php echo $_SESSION['pesan']; unset($_SESSION['pesan']); ?>
+  </div>
+  <?php
+}
 ?>
 <div class="card mb-3">
   <div class="card-header">
@@ -20,8 +28,11 @@ $result = $db->read("buku");
             <div class="form-row">
               <div class="col-md-6">
                 <label for="">ISBN</label>
-                <input class="form-control" type="text" name="isbn" value="<?php echo $data[0]['isbn']; ?>" readonly>
-              </div>
+                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                  <div class="input-group-addon"><span id="pesan">&#160;&#160;&#160;</span></div>
+                  <input class="form-control" type="text" name="isbn" value="<?php echo $data[0]['isbn']; ?>" readonly>
+                </div>
+
               <div class="col-md-6">
                 <label for="">Judul</label>
                 <input class="form-control" type="text" name="judul" value="<?php echo $data[0]['judul']; ?>" placeholder="Judul" required>
@@ -85,14 +96,14 @@ $result = $db->read("buku");
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="">Sinopsis</label>
-                <textarea class="form-control" name="sinopsis" rows="8" cols="80"  placeholder="Ketik sinopsis tentang buku disini." required><?php echo $data[0]['sinopsis']; ?></textarea>
+                <label for="">Tanggal Masuk</label>
+                <input class="form-control" type="date" name="tanggal_masuk" value="<?php echo date("Y-m-d", strtotime($data[0]['tanggal_masuk'])); ?>" placeholder="Tanggal Masuk" required>
                 <div class="invalid-feedback">
-                  Sinopsis belum diisi.
+                  Tanggal Masuk belum diisi.
                 </div>
               </div>
               <div class="col-md-6">
-                <?php echo '<img id="gambar" src="data:image/jpeg;base64,'.base64_encode( $data[0]['gambar'] ).'" style="width:200px; height:auto;">'; ?>
+                <?php echo '<img id="gambar" src="data:image/jpeg;base64,'.base64_encode( $data[0]['gambar'] ).'" style="width:auto; height:72px;">'; ?>
                 <input type="hidden" name="proses" value="edit_buku">
               </div>
             </div>
@@ -117,7 +128,10 @@ $result = $db->read("buku");
             <div class="form-row">
               <div class="col-md-6">
                 <label for="">ISBN</label>
-                <input class="form-control" type="text" name="isbn" value="" maxlength="13" placeholder="ISBN" required>
+                <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                  <div class="input-group-addon"><span id="pesan">&#160;&#160;&#160;</span></div>
+                  <input class="form-control" type="text" name="isbn" value="" maxlength="13" placeholder="ISBN" required id="isbn">
+                </div>
                 <div class="invalid-feedback">
                   ISBN belum diisi.
                 </div>
@@ -179,19 +193,19 @@ $result = $db->read("buku");
               <div class="col-md-6">
                 <label for="">Gambar</label><br>
                 <input type="file" name="gambar" value="" onchange="bacaGambar(this);" required>
-              </div>
-              <div class="invalid-feedback">
-                Gambar belum diisi.
+                <div class="invalid-feedback">
+                  Gambar belum diisi.
+                </div>
               </div>
             </div>
           </div>
           <div class="form-group">
             <div class="form-row">
               <div class="col-md-6">
-                <label for="">Sinopsis</label>
-                <textarea class="form-control" name="sinopsis" rows="8" cols="80" placeholder="Ketik sinopsis tentang buku disini." required></textarea>
+                <label for="">Tanggal Masuk</label>
+                <input class="form-control" type="date" name="tanggal_masuk" value="" placeholder="Tanggal Masuk" required>
                 <div class="invalid-feedback">
-                  Sinopsis belum diisi.
+                  Tanggal Masuk belum diisi.
                 </div>
               </div>
               <div class="col-md-6">
@@ -271,7 +285,7 @@ $result = $db->read("buku");
         reader.onload = function (e) {
           $('#gambar')
           .attr('src', e.target.result)
-          .css({"width": "200px", "height": "auto"});
+          .css({"width": "auto", "height": "72px"});
         };
         reader.readAsDataURL(input.files[0]);
       }

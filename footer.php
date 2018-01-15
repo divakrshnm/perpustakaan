@@ -62,12 +62,12 @@ $(document).ready(function(){
 </script>
 <script>
 $(document).ready(function(){
-  $('#npm').blur(function(){
-    var npm = $(this).val();
+  $('#nis').keyup(function(){
+    var nis = $(this).val();
     $.ajax({
       type	: 'POST',
       url 	: 'cek.php',
-      data 	: 'npm='+npm,
+      data 	: 'nis='+nis,
       success	: function(data){
         $('#pesan').html(data);
       }
@@ -77,12 +77,27 @@ $(document).ready(function(){
 </script>
 <script>
 $(document).ready(function(){
-  $('#npmp').blur(function(){
-    var npmp = $(this).val();
+  $('#isbn').keyup(function(){
+    var isbn = $(this).val();
     $.ajax({
       type	: 'POST',
       url 	: 'cek.php',
-      data 	: 'npmp='+npmp,
+      data 	: 'isbn='+isbn,
+      success	: function(data){
+        $('#pesan').html(data);
+      }
+    })
+  });
+});
+</script>
+<script>
+$(document).ready(function(){
+  $('#nisp').blur(function(){
+    var nisp = $(this).val();
+    $.ajax({
+      type	: 'POST',
+      url 	: 'cek.php',
+      data 	: 'nisp='+nisp,
       success	: function(data){
         $("#namap").val(data);
       }
@@ -105,11 +120,9 @@ $(document).ready(function(){
 function updateClock() {
   var now = new Date(),
       months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(),
       date = [now.getDate(),
               months[now.getMonth()],
               now.getFullYear()].join(' ');
-              document.getElementById("time").value = time;
               document.getElementById("date").value = date;
   setTimeout(updateClock, 1000);
 }

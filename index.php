@@ -10,6 +10,7 @@
 </head>
 <body>
   <?php
+  date_default_timezone_set('Asia/Jakarta');
   session_start();
   if(isset($_SESSION['status']) && $_SESSION['status'] == "login"){
     header("location:dashboard.php");
@@ -83,7 +84,13 @@
               $halaman = 1;
             }
             $mulai = ($halaman-1)*$batas;
-            $query = "SELECT * FROM buku order by isbn DESC LIMIT $mulai, $batas";
+            if(isset($_POST['cari_buku'])){
+              $judul = $_POST['judul'];
+                $query = "SELECT * FROM buku WHERE judul LIKE '%$judul%' ORDER BY isbn DESC LIMIT $mulai, $batas";
+            }else{
+              $query = "SELECT * FROM buku order by isbn DESC LIMIT $mulai, $batas";
+            }
+
             $result = mysqli_query($koneksi, $query);
             while($data = mysqli_fetch_array($result)){
               ?>
@@ -173,25 +180,52 @@
         <div class="col-md-4">
           <!-- Search Widget -->
           <div class="card mb-4">
-            <h5 class="card-header">Search</h5>
+            <h5 class="card-header">Cari Buku</h5>
             <div class="card-body">
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search for...">
-                <span class="input-group-btn">
-                  <button class="btn btn-secondary" type="button">Go!</button>
-                </span>
-              </div>
+              <form action="index.php" method="post" id="needs-validation" novalidate>
+                <div class="input-group">
+                  <input type="text" class="form-control" name="judul" placeholder="Cari buku">
+                  <span class="input-group-btn">
+                    <input type="submit" class="btn btn-primary" value="Cari" name="cari_buku">
+                  </span>
+                </div>
+              </form>
             </div>
           </div>
           <!-- Side Widget -->
           <div class="card mb-4">
             <h5 class="card-header">Kunjungan Hari Ini</h5>
             <div class="card-body">
+
+              <div class="control-group form-group">
+
+                <?php
+                if(isset($_POST['cari_nis'])){
+                  $nis = $_POST['nis'];
+                  $data = $db->read("anggota", "nis = '$nis'");
+                }
+                ?>
+                <form action="index.php" method="post" id="needs-validation" novalidate>
+                  <div class="controls">
+                    <label>NIS</label>
+                    <div class="input-group">
+                      <input type="text" class="form-control" name="nis" required placeholder="Cari NIS" value="<?php echo $data[0]['nis']; ?>">
+                      <span class="input-group-btn">
+                        <input type="submit" class="btn btn-primary" value="Cari" name="cari_nis">
+                      </span>
+                    </div>
+                    <div class="invalid-feedback">
+                      NIS belum diisi.
+                    </div>
+                  </div>
+                </div>
+              </form>
               <form action="proses.php" method="post" id="needs-validation" novalidate>
                 <div class="control-group form-group">
                   <div class="controls">
                     <label>Nama</label>
-                    <input type="text" name="nama" class="form-control" required placeholder="Nama">
+                    <input type="hidden" name="nis" value="<?php echo $data[0]['nis']; ?>" required>
+                    <input type="text" name="nama" class="form-control" required placeholder="Nama" value="<?php echo $data[0]['nama']; ?>" readonly>
                     <div class="invalid-feedback">
                       Nama belum diisi.
                     </div>
@@ -200,25 +234,9 @@
                 <div class="control-group form-group">
                   <div class="controls">
                     <label>Kelas</label>
-                    <input type="text" name="kelas" class="form-control" required placeholder="Kelas">
+                    <input type="text" name="kelas" class="form-control" required placeholder="Kelas" value="<?php echo $data[0]['kelas']; ?>" readonly>
                     <div class="invalid-feedback">
                       Kelas belum diisi.
-                    </div>
-                  </div>
-                </div>
-                <div class="control-group form-group">
-                  <div class="controls">
-                    <label>Jurusan</label>
-                    <select class="form-control" name="jurusan" required>
-                      <option value="" selected disabled>Pilih Jurusan</option>
-                      <option value="Teknik Informatika">Teknik Informatika</option>
-                      <option value="Logistik Bisnis">Logistik Bisnis</option>
-                      <option value="Akuntansi">Akuntansi</option>
-                      <option value="Manajemen Bisnis">Manajemen Bisnis</option>
-                      <option value="Manajemen Informatika">Manajemen Informatika</option>
-                    </select>
-                    <div class="invalid-feedback">
-                      Nama belum diisi.
                     </div>
                   </div>
                 </div>
@@ -228,11 +246,11 @@
                     <div class="radio">
                       &nbsp;&nbsp;&nbsp;&nbsp;
                       <label class="radio-inline">
-                        <input type="radio" name="jenis_kelamin" value="Laki-Laki" required> Laki-Laki
+                        <input type="radio" name="jenis_kelamin" value="Laki-Laki" required <?php if($data[0]['jenis_kelamin'] == 'Laki-Laki'){echo 'checked';} ?>> Laki-Laki
                       </label>
                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                       <label class="radio-inline">
-                        <input type="radio" name="jenis_kelamin" value="Perempuan" required> Perempuan
+                        <input type="radio" name="jenis_kelamin" value="Perempuan" required <?php if($data[0]['jenis_kelamin'] == 'Perempuan'){echo 'checked';}?>> Perempuan
                       </label>
                     </div>
                     <div class="invalid-feedback">
@@ -244,12 +262,6 @@
                   <div class="controls">
                     <label>Tanggal</label>
                     <input type="text" class="form-control" id="date" readonly>
-                  </div>
-                </div>
-                <div class="control-group form-group">
-                  <div class="controls">
-                    <label>Jam</label>
-                    <input type="text" class="form-control" id="time" readonly>
                   </div>
                 </div>
                 <div class="control-group form-group">
@@ -275,30 +287,26 @@
                 <thead>
                   <tr>
                     <th>No.</th>
-                    <th style="width:30%">Nama</th>
+                    <th style="width:20%">Nama</th>
                     <th>Kelas</th>
-                    <th>Jurusan</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Tanggal</th>
-                    <th>Jam</th>
-                    <th style="width:20%">Keperluan</th>
+                    <th style="width:15%">Jenis Kelamin</th>
+                    <th style="width:15%">Tanggal</th>
+                    <th style="width:15%">Keperluan</th>
                   </tr>
                 </thead>
                 <tbody>
                   <?php
                   $no = 1;
                   $tanggal = date('Y-m-d');
-                  $kunjungan = $db->read("data_kunjungan", "tanggal = '$tanggal'");
+                  $kunjungan = $db->read("data_kunjungan", "tanggal = '$tanggal'", "INNER JOIN anggota ON data_kunjungan.nis = anggota.nis");
                   foreach($kunjungan as $data){
                     ?>
                     <tr>
                       <td><?php echo $no++; ?></td>
-                      <td><?php echo $data['nama_pengunjung']; ?></td>
+                      <td><?php echo $data['nama']; ?></td>
                       <td><?php echo $data['kelas']; ?></td>
-                      <td><?php echo $data['jurusan']; ?></td>
                       <td><?php echo $data['jenis_kelamin']; ?></td>
-                      <td><?php echo $data['tanggal']; ?></td>
-                      <td><?php echo $data['jam']; ?></td>
+                      <td><?php $newDate = date("d F Y", strtotime($data['tanggal'])); echo $newDate; ?></td>
                       <td><?php echo $data['keperluan']; ?></td>
                     </tr>
                     <?php
@@ -327,7 +335,7 @@
     <script src="assets/js/sb-admin-datatables.min.js"></script>
     <script>
     (function() {
-      'use strict';      
+      'use strict';
       window.addEventListener('load', function() {
         var form = document.getElementById('needs-validation');
         form.addEventListener('submit', function(event) {
@@ -344,11 +352,9 @@
     function updateClock() {
       var now = new Date(),
       months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-      time = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds(),
       date = [now.getDate(),
         months[now.getMonth()],
         now.getFullYear()].join(' ');
-        document.getElementById("time").value = time;
         document.getElementById("date").value = date;
         setTimeout(updateClock, 1000);
       }

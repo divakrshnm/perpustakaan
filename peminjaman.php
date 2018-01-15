@@ -3,7 +3,15 @@ $title = "Peminjaman";
 include 'header.php';
 include 'config/Database.php';
 $db = new Database();
-$result = $db->read("data_peminjaman");
+$result = $db->read("data_peminjaman", null, "INNER JOIN anggota ON data_peminjaman.nis = anggota.nis  INNER JOIN buku ON data_peminjaman.isbn = buku.isbn");
+if(isset($_SESSION['pesan'])){
+  ?>
+  <div class="alert alert-success alert-dismissable">
+  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Sukses!</strong> <?php echo $_SESSION['pesan']; unset($_SESSION['pesan']); ?>
+  </div>
+  <?php
+}
 ?>
 <div class="card mb-3">
   <div class="card-header">
@@ -13,10 +21,10 @@ $result = $db->read("data_peminjaman");
         <div class="form-group">
           <div class="form-row">
             <div class="col-md-6">
-              <label for="">NPM</label>
-              <input class="form-control" type="text" name="npm" value="" placeholder="NPM" required id="npmp">
+              <label for="">NIS</label>
+              <input class="form-control" type="text" name="nis" value="" placeholder="NIS" required id="nisp">
               <div class="invalid-feedback">
-                NPM belum diisi.
+                NIS belum diisi.
               </div>
             </div>
             <div class="col-md-6">
@@ -52,10 +60,6 @@ $result = $db->read("data_peminjaman");
               <label>Tanggal</label>
               <input type="text" class="form-control" id="date" readonly>
             </div>
-            <div class="col-md-6">
-              <label>Jam</label>
-              <input type="text" class="form-control" id="time" readonly>
-            </div>
           </div>
         </div>
         <div class="form-group">
@@ -76,18 +80,18 @@ $result = $db->read("data_peminjaman");
   </div>
   <div class="card mb-3">
     <div class="card-header">
-      <i class="fa fa-table"></i> Data Buku</div>
+      <i class="fa fa-table"></i> Data Peminjaman</div>
       <div class="card-body">
         <div class="table-responsive">
           <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
               <tr>
                 <th>No. Peminjaman</th>
-                <th>NPM</th>
+                <th>NIS</th>
+                <th>Nama</th>
                 <th>ISBN</th>
-                <th>Tanggal</th>
-                <th>Jam</th>
-                <th>Jumlah</th>
+                <th>Judul</th>
+                <th>Tanggal Peminjaman</th>
               </tr>
             </thead>
             <tbody>
@@ -96,11 +100,11 @@ $result = $db->read("data_peminjaman");
                 ?>
                 <tr>
                   <td><?php echo $data['no_peminjaman']; ?></td>
-                  <td><?php echo $data['npm']; ?></td>
+                  <td><?php echo $data['nis']; ?></td>
+                  <td><?php echo $data['nama']; ?></td>
                   <td><?php echo $data['isbn']; ?></td>
-                  <td><?php echo $data['tanggal']; ?></td>
-                  <td><?php echo $data['jam']; ?></td>
-                  <td><?php echo $data['jumlah']; ?></td>
+                  <td><?php echo $data['judul']; ?></td>
+                  <td><?php $newDate = date("d F Y", strtotime($data['tanggal_peminjaman'])); echo $newDate; ?></td>
                 </tr>
                 <?php
               }

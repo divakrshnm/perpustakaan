@@ -1,13 +1,26 @@
 <?php
 include_once 'config/Database.php';
 $db = new Database();
-if(isset($_POST['npm'])){
-  $npm = $_POST['npm'];
-  $result = $db->login("anggota", "npm = '$npm'");
+if(isset($_POST['nis'])){
+  $nis = $_POST['nis'];
+  $result = $db->login("anggota", "nis = '$nis'");
   if($result > 0){
     echo '<div style="color:red;">&#10005</div>';
   }
-  else if($result == 0 && $npm != ""){
+  else if($result == 0 && $nis != ""){
+    echo '<div style="color:green;">&#10003;</div>';
+  }
+  else{
+    echo "&#160;&#160;&#160;";
+  }
+}
+if(isset($_POST['isbn'])){
+  $isbn = $_POST['isbn'];
+  $result = $db->login("buku", "isbn = '$isbn'");
+  if($result > 0){
+    echo '<div style="color:red;">&#10005</div>';
+  }
+  else if($result == 0 && $isbn != ""){
     echo '<div style="color:green;">&#10003;</div>';
   }
   else{
@@ -15,11 +28,11 @@ if(isset($_POST['npm'])){
   }
 }
 
-if(isset($_POST['npmp'])){
-  $npmp = $_POST['npmp'];
-  $result = $db->cek("anggota", "npm = '$npmp'");
+if(isset($_POST['nisp'])){
+  $nisp = $_POST['nisp'];
+  $result = $db->cek("anggota", "nis = '$nisp'");
   if($result > 0){
-    $result = $db->read("anggota", "npm = '$npmp'");
+    $result = $db->read("anggota", "nis = '$nisp'");
     echo $result[0]['nama'];
   }
 }

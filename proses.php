@@ -24,17 +24,15 @@ switch ($proses) {
   break;
   ////TAMBAH ANGGOTA////
   case 'tambah_anggota':
-  $npm = $_POST['npm'];
+  $nis = $_POST['nis'];
   $nama = ucwords($_POST['nama']);
   $kelas = strtoupper($_POST['kelas']);
-  $jurusan = $_POST['jurusan'];
   $jenis_kelamin = $_POST['jenis_kelamin'];
 
   $data = array(
-    "npm" => $npm,
+    "nis" => $nis,
     "nama" => $nama,
     "kelas" => $kelas,
-    "jurusan" => $jurusan,
     "jenis_kelamin" => $jenis_kelamin
   );
   $db->create("anggota", $data);
@@ -44,18 +42,16 @@ switch ($proses) {
   break;
   ////EDIT ANGGOTA////
   case 'edit_anggota':
-  $npm = $_POST['npm'];
+  $nis = $_POST['nis'];
   $nama = ucwords($_POST['nama']);
   $kelas = strtoupper($_POST['kelas']);
-  $jurusan = $_POST['jurusan'];
   $jenis_kelamin = $_POST['jenis_kelamin'];
   $data = array(
     "nama" => $nama,
     "kelas" => $kelas,
-    "jurusan" => $jurusan,
     "jenis_kelamin" => $jenis_kelamin
   );
-  $db->update("anggota", $data, "npm = '$npm'");
+  $db->update("anggota", $data, "nis = '$nis'");
   session_start();
   $_SESSION['pesan'] = "$nama berhasil diedit.";
   header("location:anggota.php");
@@ -69,7 +65,7 @@ switch ($proses) {
   $penerbit = ucwords($_POST['penerbit']);
   $jumlah = $_POST['jumlah'];
   $lokasi = $_POST['lokasi'];
-  $sinopsis = $_POST['sinopsis'];
+  $tanggal_masuk = date("Y-m-d", strtotime($_POST['tanggal_masuk']));
   $gambar = addslashes(file_get_contents($_FILES['gambar']['tmp_name']));
   $jenis_gambar = $_FILES['gambar']['type'];
   $ukuran_gambar = $_FILES['gambar']['size'];
@@ -84,10 +80,12 @@ switch ($proses) {
         "penerbit" => $penerbit,
         "jumlah" => $jumlah,
         "lokasi" => $lokasi,
-        "sinopsis" => $sinopsis,
+        "tanggal_masuk" => $tanggal_masuk,
         "gambar" => $gambar
       );
       $db->create("buku", $data);
+      session_start();
+      $_SESSION['pesan'] = "$judul berhasil ditambahkan.";
       header("location:buku.php");
     }else {
       echo "Ukuran Gambar Lebih dari 1 Mb";
@@ -108,7 +106,7 @@ switch ($proses) {
   $penerbit = ucwords($_POST['penerbit']);
   $jumlah = $_POST['jumlah'];
   $lokasi = $_POST['lokasi'];
-  $sinopsis = $_POST['sinopsis'];
+  $tanggal_masuk = date("Y-m-d", strtotime($_POST['tanggal_masuk']));
   if(file_exists($_FILES['gambar'])){
     $gambar = addslashes(file_get_contents($_FILES['gambar']['tmp_name']));
     $jenis_gambar = $_FILES['gambar']['type'];
@@ -123,10 +121,12 @@ switch ($proses) {
           "penerbit" => $penerbit,
           "jumlah" => $jumlah,
           "lokasi" => $lokasi,
-          "sinopsis" => $sinopsis,
+          "tanggal_masuk" => $tanggal_masuk,
           "gambar" => $gambar
         );
         $db->update("buku", $data, "isbn = '$isbn'");
+        session_start();
+        $_SESSION['pesan'] = "$judul berhasil diedit.";
         header("location:buku.php");
       }else {
         echo "Ukuran Gambar Lebih dari 500 kb";
@@ -143,9 +143,11 @@ switch ($proses) {
       "penerbit" => $penerbit,
       "jumlah" => $jumlah,
       "lokasi" => $lokasi,
-      "sinopsis" => $sinopsis
+      "tanggal_masuk" => $tanggal_masuk,
     );
     $db->update("buku", $data, "isbn = '$isbn'");
+    session_start();
+    $_SESSION['pesan'] = "$judul berhasil diedit.";
     header("location:buku.php");
   }
   break;
@@ -176,20 +178,12 @@ switch ($proses) {
   break;
   ////TAMBAH KUNJUNGAN////
   case 'tambah_kunjugan':
-  $nama = ucwords($_POST['nama']);
-  $kelas = strtoupper($_POST['kelas']);
-  $jurusan = $_POST['jurusan'];
-  $jenis_kelamin = $_POST['jenis_kelamin'];
+  $nis = $_POST['nis'];
   $tanggal = date('Y-m-d');
-  $jam = date('H:i:s');
   $keperluan = $_POST['keperluan'];
   $data = array(
-    "nama_pengunjung" => $nama,
-    "kelas" => $kelas,
-    "jurusan" => $jurusan,
-    "jenis_kelamin" => $jenis_kelamin,
+    "nis" => $nis,
     "tanggal" => $tanggal,
-    "jam" => $jam,
     "keperluan" => $keperluan
   );
   $db->create("data_kunjungan", $data);
@@ -197,34 +191,40 @@ switch ($proses) {
   break;
   ////TAMBAH PEMINJAMAN////
   case 'tambah_peminjaman':
-  $npm = $_POST['npm'];
+  $nis = $_POST['nis'];
   $isbn = $_POST['isbn'];
   $tanggal = date('Y-m-d');
-  $jam = date('H:i:s');
   $data = array(
-    "npm" => $npm,
+    "nis" => $nis,
     "isbn" => $isbn,
-    "tanggal" => $tanggal,
-    "jam" => $jam
+    "tanggal_peminjaman" => $tanggal
   );
   $db->create("data_peminjaman", $data);
+  session_start();
+  $_SESSION['pesan'] = "Data peminjaman berhasil ditambahkan.";
   header("location:peminjaman.php");
   break;
   ////TAMBAH PENGEMBALIAN////
   case 'tambah_pengembalian':
-  $npm = $_POST['npm'];
+  $nis = $_POST['nis'];
   $isbn = $_POST['isbn'];
-  $denda = $_POST['denda'];
   $no_peminjaman = $_POST['no_peminjaman'];
   $tanggal = date('Y-m-d');
-  $jam = date('H:i:s');
+  if(isset($_POST['keterangan'])){
+    $keterangan = $_POST['keterangan'];
+  }
+  else{
+      $keterangan = "-";
+  }
+  $keterangan = $_POST['keterangan'];
   $data = array(
-    "npm" => $npm,
-    "isbn" => $isbn,
-    "tanggal" => $tanggal,
-    "jam" => $jam
+    "tanggal_pengembalian" => $tanggal,
+    "keterangan" => $keterangan,
+    "status" => "Kembali"
   );
-  $db->create("data_pengembalian", $data);
+  $db->update("data_peminjaman", $data, "nis = '$nis' AND isbn = '$isbn' AND no_peminjaman = '$no_peminjaman'");
+  session_start();
+  $_SESSION['pesan'] = "Data pengembalian berhasil ditambahkan.";
   header("location:pengembalian.php");
   break;
 }

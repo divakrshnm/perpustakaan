@@ -42,6 +42,8 @@ class Database{
       else{
         $sql .= " WHERE $where";
       }
+    }else{
+      $sql .= " $join";
     }
     $query = $this->conn->query($sql);
     return $query->fetch_all(MYSQLI_BOTH);
@@ -69,6 +71,7 @@ class Database{
           $set .=", ".$kolom." = '".$nilai."'";
         }
         $sql .= substr($set, 2)." WHERE $where";
+        //echo $sql;
         $query = $this->conn->prepare($sql);
         $query->execute();
       }
