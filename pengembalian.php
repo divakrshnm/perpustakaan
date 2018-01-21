@@ -3,10 +3,21 @@ $title = "Pengembalian";
 include 'header.php';
 include 'config/Database.php';
 $db = new Database();
+if(isset($_SESSION['valid'])){
+  echo $_SESSION['valid'];
+  unset($_SESSION['valid']);
+}
 if(isset($_POST['cari_peminjaman'])){
   $nis = $_POST['nis'];
   $isbn = $_POST['isbn'];
-  $result = $db->read("data_peminjaman", "data_peminjaman.isbn = '$isbn' AND data_peminjaman.nis  = '$nis' AND status = 'Belum Kembali'", "INNER JOIN buku ON data_peminjaman.isbn = buku.isbn INNER JOIN anggota ON data_peminjaman.nis = anggota.nis");
+  $cek = $db->cek("data_peminjaman", "data_peminjaman.isbn = '$isbn' AND data_peminjaman.nis  = '$nis' AND status = 'Belum Kembali'", "INNER JOIN buku ON data_peminjaman.isbn = buku.isbn INNER JOIN anggota ON data_peminjaman.nis = anggota.nis");
+  if($cek > 0){
+    $result = $db->read("data_peminjaman", "data_peminjaman.isbn = '$isbn' AND data_peminjaman.nis  = '$nis' AND status = 'Belum Kembali'", "INNER JOIN buku ON data_peminjaman.isbn = buku.isbn INNER JOIN anggota ON data_peminjaman.nis = anggota.nis");
+  }
+  else{
+    echo '<script type="text/javascript">alert("NIS atau ISBN yang anda masukan tidak ada di data peminjaman.");</script>';
+  }
+
 }
 if(isset($_SESSION['pesan'])){
   ?>
@@ -69,7 +80,11 @@ if(isset($_SESSION['pesan'])){
         </div>
         <div class="form-group">
           <div class="form-row">
-            <div class="col-md-12">
+            <div class="col-md-6">
+              <label>Tanggal Peminjaman</label>
+              <input type="text" class="form-control" value="<?php if(isset($result[0]['tanggal_peminjaman'])){$newDate = date("d F Y", strtotime($result[0]['tanggal_peminjaman'])); echo $newDate;} ?>" readonly>
+            </div>
+            <div class="col-md-6">
               <label>Tanggal Pengembalian</label>
               <input type="text" class="form-control" id="date" readonly>
             </div>
@@ -131,9 +146,9 @@ if(isset($_SESSION['pesan'])){
                 <td><?php echo $data['no_peminjaman']; ?></td>
                 <td><?php echo $data['nis']; ?></td>
                 <td><?php echo $data['isbn']; ?></td>
-                <td><?php echo $data['tanggal_peminjaman']; ?></td>
-                <td><?php echo $data['tanggal_pengembalian']; ?></td>
-                <td><?php echo $data['status']; ?></td>
+                <td><?php $newDate = date("d F Y", strtotime($data['tanggal_peminjaman'])); echo $newDate; ?></td>
+                <td><?php $newDate = date("d F Y", strtotime($data['tanggal_pengembalian'])); echo $newDate; ?></td>
+                <td><?php if($data['status'] == "Kembali"){echo "<b style='color:green;'>".$data['status']."</b>";}else{echo "<b style='color:red;'>".$data['status']."</b>";} ?></td>
                 <td><?php echo $data['keterangan']; ?></td>
               </tr>
               <?php

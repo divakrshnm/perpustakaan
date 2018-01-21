@@ -4,6 +4,14 @@ $title = "Petugas";
   include 'config/Database.php';
   $db = new Database();
   $result = $db->read("petugas");
+  if(isset($_SESSION['pesan'])){
+    ?>
+    <div class="alert alert-success alert-dismissable">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+      <strong>Sukses!</strong> <?php echo $_SESSION['pesan']; unset($_SESSION['pesan']); ?>
+    </div>
+    <?php
+  }
 ?>
 <div class="card mb-3">
   <div class="card-header">

@@ -10,8 +10,14 @@
 </head>
 <body>
   <?php
+  include_once 'config/Database.php';
+  $db = new Database();
   date_default_timezone_set('Asia/Jakarta');
   session_start();
+  if(isset($_SESSION['valid'])){
+    echo $_SESSION['valid'];
+    unset($_SESSION['valid']);
+  }
   if(isset($_SESSION['status']) && $_SESSION['status'] == "login"){
     header("location:dashboard.php");
   }
@@ -20,7 +26,24 @@
     <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
         <a class="navbar-brand" href="index.php">ePerpustakaan</a>
-        <?php include 'login.php'; ?>
+        <?php
+        include 'login.php';
+        if(isset($_POST['username']) AND isset($_POST['password'])){
+          $username =  mysqli_real_escape_string($db->conn, trim($_POST['username']));
+          $password =  mysqli_real_escape_string($db->conn, trim($_POST['password']));
+          $result = $db->login("petugas", "username = '$username' AND password = '$password'");
+          if($result > 0){
+            $result = $db->read("petugas", "username = '$username' AND password = '$password'");
+            session_start();
+            $_SESSION['fullname'] = $result[0]['fullname'];
+            $_SESSION['status'] = "login";
+            header("location:dashboard.php");
+          }
+          else{
+            echo '<script type="text/javascript">alert("Username atau password salah.");</script>';
+          }
+        }
+        ?>
       </div>
     </nav>
     <header>
@@ -34,22 +57,19 @@
           <!-- Slide One - Set the background image for this slide in the line below -->
           <div class="carousel-item active" style="background-image: url('images/1.jpg')">
             <div class="carousel-caption d-none d-md-block">
-              <h3>Mastin</h3>
-              <p>Manggis kini ada ekstraknya.</p>
+              <h3>Magic Painting Book</h3>
             </div>
           </div>
           <!-- Slide Two - Set the background image for this slide in the line below -->
           <div class="carousel-item" style="background-image: url('images/2.jpg')">
             <div class="carousel-caption d-none d-md-block">
-              <h3>Mastin</h3>
-              <p>Manggis kini ada ekstraknya.</p>
+              <h3>Many Books</h3>
             </div>
           </div>
           <!-- Slide Three - Set the background image for this slide in the line below -->
           <div class="carousel-item" style="background-image: url('images/3.jpg')">
             <div class="carousel-caption d-none d-md-block">
-              <h3>Mastin</h3>
-              <p>Manggis kini ada ekstraknya.</p>
+              <h3>The Great Ghost Hunt</h3>
             </div>
           </div>
         </div>
@@ -71,8 +91,6 @@
         <div class="col-md-8">
           <div class="row">
             <?php
-            include 'config/Database.php';
-            $db = new Database();
             $buku = $db->read("buku");
             $koneksi = new mysqli("localhost", "root", "", "perpustakaan");
             $batas = 6;
@@ -86,42 +104,53 @@
             $mulai = ($halaman-1)*$batas;
             if(isset($_POST['cari_buku'])){
               $judul = $_POST['judul'];
-                $query = "SELECT * FROM buku WHERE judul LIKE '%$judul%' ORDER BY isbn DESC LIMIT $mulai, $batas";
+              $query = "SELECT * FROM buku WHERE judul LIKE '%$judul%' ORDER BY isbn DESC LIMIT $mulai, $batas";
             }else{
               $query = "SELECT * FROM buku order by isbn DESC LIMIT $mulai, $batas";
             }
 
             $result = mysqli_query($koneksi, $query);
-            while($data = mysqli_fetch_array($result)){
-              ?>
-              <div class="col-lg-4 mb-4">
-                <div class="card h-100 text-center">
-                  <?php echo '<img class="card-img-top" src="data:image/jpeg;base64,'.base64_encode( $data['gambar'] ).'" style="width:100%; height:306px; object-fit: cover;">'; ?>
-                  <div class="card-body">
-                    <h5 class="card-title"><?php echo $data['judul']; ?></h5>
-                    <h6 class="card-subtitle mb-2 text-muted"><?php echo $data['pengarang']; ?></h6>
-                    <div class="card-text">
-                      Lokasi Buku : <?php  echo $data['lokasi']; ?>
+            $exist = mysqli_num_rows($result);
+            if($exist > 0){
+              while($data = mysqli_fetch_array($result)){
+                ?>
+                <div class="col-lg-4 mb-4">
+                  <div class="card h-100 text-center">
+                    <?php echo '<img class="card-img-top" src="data:image/jpeg;base64,'.base64_encode( $data['gambar'] ).'" style="width:100%; height:306px; object-fit: cover;">'; ?>
+                    <div class="card-body">
+                      <h5 class="card-title"><?php echo $data['judul']; ?></h5>
+                      <h6 class="card-subtitle mb-2 text-muted"><?php echo $data['pengarang']; ?></h6>
+                      <div class="card-text">
+                        Lokasi Buku : <?php  echo $data['lokasi']; ?>
+                      </div>
+                    </div>
+                    <div class="card-footer">
+                      <?php
+                      if($data['jumlah']>0){
+                        echo '<h6 style="color:green;">Buku Tersedia</h6>';
+                      }
+                      else{
+                        echo '<h6 style="color:red;">Buku Telah Dipinjam</h6>';
+                      }
+                      ?>
                     </div>
                   </div>
-                  <div class="card-footer">
-                    <?php
-                    if($data['jumlah']>0){
-                      echo '<h6 style="color:green;">Buku Tersedia</h6>';
-                    }
-                    else{
-                      echo '<h6 style="color:red;">Buku Telah Dipinjam</h6>';
-                    }
-                    ?>
-                  </div>
                 </div>
-              </div>
-              <?php
+                <?php
+              }
+            }else{
+              echo '<div class="col-lg-12"><h4 style="height:60px;">Maaf, buku yang anda cari tidak ditemukan.</h4></div>';
             }
+
             ?>
           </div>
           <?php
-          $halaman_query = "SELECT * FROM buku ORDER BY isbn DESC";
+          if(isset($_POST['cari_buku'])){
+            $halaman_query = "SELECT * FROM buku WHERE judul LIKE '%$judul%' ORDER BY isbn DESC";
+          }else{
+            $halaman_query = "SELECT * FROM buku ORDER BY isbn DESC";
+          }
+          //$halaman_query = "SELECT * FROM buku ORDER BY isbn DESC";
           $hasil = mysqli_query($koneksi, $halaman_query);
           $total_data = mysqli_num_rows($hasil);
           $total_halaman = ceil($total_data/$batas);
@@ -182,9 +211,9 @@
           <div class="card mb-4">
             <h5 class="card-header">Cari Buku</h5>
             <div class="card-body">
-              <form action="index.php" method="post" id="needs-validation" novalidate>
+              <form action="index.php" method="post">
                 <div class="input-group">
-                  <input type="text" class="form-control" name="judul" placeholder="Cari buku">
+                  <input type="text" class="form-control" name="judul" placeholder="Judul" required>
                   <span class="input-group-btn">
                     <input type="submit" class="btn btn-primary" value="Cari" name="cari_buku">
                   </span>
@@ -202,30 +231,33 @@
                 <?php
                 if(isset($_POST['cari_nis'])){
                   $nis = $_POST['nis'];
-                  $data = $db->read("anggota", "nis = '$nis'");
+                  $cek = $db->cek("anggota", "nis = '$nis'");
+                  if($cek > 0){
+                    $data = $db->read("anggota", "nis = '$nis'");
+                  }
+                  else{
+                    echo '<script type="text/javascript">alert("NIS yang anda masukan tidak terdaftar.");</script>';
+                  }
                 }
                 ?>
-                <form action="index.php" method="post" id="needs-validation" novalidate>
+                <form action="index.php" method="post">
                   <div class="controls">
                     <label>NIS</label>
                     <div class="input-group">
-                      <input type="text" class="form-control" name="nis" required placeholder="Cari NIS" value="<?php echo $data[0]['nis']; ?>">
+                      <input type="text" class="form-control" name="nis"  placeholder="Cari NIS" value="<?php if(isset($data[0]['nis'])){echo $data[0]['nis'];} ?>" required>
                       <span class="input-group-btn">
                         <input type="submit" class="btn btn-primary" value="Cari" name="cari_nis">
                       </span>
                     </div>
-                    <div class="invalid-feedback">
-                      NIS belum diisi.
-                    </div>
                   </div>
                 </div>
               </form>
-              <form action="proses.php" method="post" id="needs-validation" novalidate>
+              <form action="proses.php" method="post" id="needs-validation2" novalidate>
                 <div class="control-group form-group">
                   <div class="controls">
                     <label>Nama</label>
-                    <input type="hidden" name="nis" value="<?php echo $data[0]['nis']; ?>" required>
-                    <input type="text" name="nama" class="form-control" required placeholder="Nama" value="<?php echo $data[0]['nama']; ?>" readonly>
+                    <input type="hidden" name="nis2" value="<?php if(isset($data[0]['nis'])){echo $data[0]['nis'];} ?>" required>
+                    <input type="text" name="nama" class="form-control" required placeholder="Nama" value="<?php  if(isset($data[0]['nama'])){echo $data[0]['nama'];} ?>" readonly>
                     <div class="invalid-feedback">
                       Nama belum diisi.
                     </div>
@@ -234,27 +266,9 @@
                 <div class="control-group form-group">
                   <div class="controls">
                     <label>Kelas</label>
-                    <input type="text" name="kelas" class="form-control" required placeholder="Kelas" value="<?php echo $data[0]['kelas']; ?>" readonly>
+                    <input type="text" name="kelas" class="form-control" required placeholder="Kelas" value="<?php  if(isset($data[0]['kelas'])){echo $data[0]['kelas'];}else{echo "";} ?>" readonly>
                     <div class="invalid-feedback">
                       Kelas belum diisi.
-                    </div>
-                  </div>
-                </div>
-                <div class="control-group form-group">
-                  <div class="controls">
-                    <label>Jenis Kelamin</label>
-                    <div class="radio">
-                      &nbsp;&nbsp;&nbsp;&nbsp;
-                      <label class="radio-inline">
-                        <input type="radio" name="jenis_kelamin" value="Laki-Laki" required <?php if($data[0]['jenis_kelamin'] == 'Laki-Laki'){echo 'checked';} ?>> Laki-Laki
-                      </label>
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                      <label class="radio-inline">
-                        <input type="radio" name="jenis_kelamin" value="Perempuan" required <?php if($data[0]['jenis_kelamin'] == 'Perempuan'){echo 'checked';}?>> Perempuan
-                      </label>
-                    </div>
-                    <div class="invalid-feedback">
-                      Jenis kelamin belum diisi.
                     </div>
                   </div>
                 </div>
@@ -328,16 +342,18 @@
       <!-- /.container -->
     </footer>
     <!-- Bootstrap core JavaScript -->
+
     <script src="assets/vendor/jquery/jquery.min.js"></script>
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/vendor/datatables/jquery.dataTables.js"></script>
     <script src="assets/vendor/datatables/dataTables.bootstrap4.js"></script>
     <script src="assets/js/sb-admin-datatables.min.js"></script>
-    <script>
+    <script type="text/javascript">
+
     (function() {
       'use strict';
       window.addEventListener('load', function() {
-        var form = document.getElementById('needs-validation');
+        var form = document.getElementById('needs-validation2');
         form.addEventListener('submit', function(event) {
           if (form.checkValidity() === false) {
             event.preventDefault();
@@ -347,8 +363,7 @@
         }, false);
       }, false);
     })();
-    </script>
-    <script type="text/javascript">
+
     function updateClock() {
       var now = new Date(),
       months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -360,6 +375,7 @@
       }
       updateClock();
       </script>
+
     <?php       } ?>
   </body>
   </html>

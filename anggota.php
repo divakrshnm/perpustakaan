@@ -4,6 +4,10 @@ include 'header.php';
 include_once 'config/Database.php';
 $db = new Database();
 $result = $db->read("anggota");
+if(isset($_SESSION['valid'])){
+  echo $_SESSION['valid'];
+  unset($_SESSION['valid']);
+}
 if(isset($_SESSION['pesan'])){
   ?>
   <div class="alert alert-success alert-dismissable">

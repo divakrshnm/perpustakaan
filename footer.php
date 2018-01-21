@@ -4,7 +4,7 @@
 <footer class="sticky-footer">
   <div class="container">
     <div class="text-center">
-      <small>Copyright © Your Website 2017</small>
+      <small>Copyright &copy; ePerpustakaan <?php echo date('Y') ?></small>
     </div>
   </div>
 </footer>
@@ -51,7 +51,7 @@ $(document).ready(function(){
   window.addEventListener('load', function() {
     var form = document.getElementById('needs-validation');
     form.addEventListener('submit', function(event) {
-      if (form.checkValidity() === false) {
+      if (form.checkValidity() == false) {
         event.preventDefault();
         event.stopPropagation();
       }

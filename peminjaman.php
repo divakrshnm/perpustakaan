@@ -4,6 +4,10 @@ include 'header.php';
 include 'config/Database.php';
 $db = new Database();
 $result = $db->read("data_peminjaman", null, "INNER JOIN anggota ON data_peminjaman.nis = anggota.nis  INNER JOIN buku ON data_peminjaman.isbn = buku.isbn");
+if(isset($_SESSION['valid'])){
+  echo $_SESSION['valid'];
+  unset($_SESSION['valid']);
+}
 if(isset($_SESSION['pesan'])){
   ?>
   <div class="alert alert-success alert-dismissable">

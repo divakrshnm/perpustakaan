@@ -4,6 +4,10 @@ include 'header.php';
 include_once 'config/Database.php';
 $db = new Database();
 $result = $db->read("buku");
+if(isset($_SESSION['valid'])){
+  echo $_SESSION['valid'];
+  unset($_SESSION['valid']);
+}
 if(isset($_SESSION['pesan'])){
   ?>
   <div class="alert alert-success alert-dismissable">
@@ -30,9 +34,9 @@ if(isset($_SESSION['pesan'])){
                 <label for="">ISBN</label>
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                   <div class="input-group-addon"><span id="pesan">&#160;&#160;&#160;</span></div>
-                  <input class="form-control" type="text" name="isbn" value="<?php echo $data[0]['isbn']; ?>" readonly>
+                  <input class="form-control" type="number" name="isbn" value="<?php echo $data[0]['isbn']; ?>" readonly>
                 </div>
-
+</div>
               <div class="col-md-6">
                 <label for="">Judul</label>
                 <input class="form-control" type="text" name="judul" value="<?php echo $data[0]['judul']; ?>" placeholder="Judul" required>
@@ -53,7 +57,7 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Tahun Terbit</label>
-                <input class="form-control" type="text" name="tahun_terbit" value="<?php echo $data[0]['tahun_terbit']; ?>" placeholder="Tahun Terbit" required>
+                <input class="form-control" type="number" name="tahun_terbit" value="<?php echo $data[0]['tahun_terbit']; ?>" placeholder="Tahun Terbit" required>
                 <div class="invalid-feedback">
                   Tahun terbit belum diisi.
                 </div>
@@ -71,7 +75,7 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Jumlah</label>
-                <input class="form-control" type="text" name="jumlah" value="<?php echo $data[0]['jumlah']; ?>" placeholder="Jumlah" required>
+                <input class="form-control" type="number" name="jumlah" value="<?php echo $data[0]['jumlah']; ?>" placeholder="Jumlah" required>
                 <div class="invalid-feedback">
                   Jumlah belum diisi.
                 </div>
@@ -89,7 +93,10 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Gambar</label><br>
-                <input type="file" name="gambar" value="" onchange="bacaGambar(this);">
+                <input type="file" name="gambar" value="" onchange="bacaGambar(this);" required>
+                <div class="invalid-feedback">
+                  Lokasi belum diisi.
+                </div>
               </div>
             </div>
           </div>
@@ -130,7 +137,7 @@ if(isset($_SESSION['pesan'])){
                 <label for="">ISBN</label>
                 <div class="input-group mb-2 mr-sm-2 mb-sm-0">
                   <div class="input-group-addon"><span id="pesan">&#160;&#160;&#160;</span></div>
-                  <input class="form-control" type="text" name="isbn" value="" maxlength="13" placeholder="ISBN" required id="isbn">
+                  <input class="form-control" type="number" name="isbn" value="" maxlength="13" placeholder="ISBN" required id="isbn">
                 </div>
                 <div class="invalid-feedback">
                   ISBN belum diisi.
@@ -156,7 +163,7 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Tahun Terbit</label>
-                <input class="form-control" type="text" name="tahun_terbit" value="" placeholder="Tahun Terbit" required>
+                <input class="form-control" type="number" name="tahun_terbit" value="" placeholder="Tahun Terbit" required>
                 <div class="invalid-feedback">
                   Tahun terbit belum diisi.
                 </div>
@@ -174,7 +181,7 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Jumlah</label>
-                <input class="form-control" type="text" name="jumlah" value="" placeholder="Jumlah" required>
+                <input class="form-control" type="number" name="jumlah" value="" placeholder="Jumlah" required>
                 <div class="invalid-feedback">
                   Jumlah belum diisi.
                 </div>
@@ -192,7 +199,7 @@ if(isset($_SESSION['pesan'])){
               </div>
               <div class="col-md-6">
                 <label for="">Gambar</label><br>
-                <input type="file" name="gambar" value="" onchange="bacaGambar(this);" required>
+                <input class="form-control" type="file" name="gambar" value="" onchange="bacaGambar(this);" >
                 <div class="invalid-feedback">
                   Gambar belum diisi.
                 </div>

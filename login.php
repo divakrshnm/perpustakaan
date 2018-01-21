@@ -1,4 +1,4 @@
-<form action="proses.php" method="post">
+<form action="index.php" method="post">
   <div class="collapse navbar-collapse" id="navbarResponsive">
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
@@ -14,7 +14,7 @@
       </li>
       &nbsp;
       <li class="nav-item">
-        <input type="hidden" name="proses" value="login">
+        <input type="hidden" name="valid" value="login">
         <input type="submit" class="btn btn-secondary" name="login" value="Login">
       </li>
     </ul>
